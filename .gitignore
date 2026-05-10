@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv*/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+.vite/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Project specific
+backend/uploads/*
+!backend/uploads/.gitkeep
+chroma_data/
+*.pdf
+
+# Environment
+.env
+.env.local
+*.db
+
+# Docker
+*.log
+
+# Old duplicate tree (optional; remove this line if you need it in git)
+ProjectTask-1_i220918_i221047_i221227/

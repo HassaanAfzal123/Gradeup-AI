@@ -1,0 +1,197 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{url}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue
+}
+
+\setstretch{1.1}
+\setlist[itemize]{leftmargin=1.5em}
+\setlist[enumerate]{leftmargin=1.8em}
+
+\titleformat{\section}{\large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+
+\title{\textbf{User-Centric RAG-Based Tutoring with Learning Analytics and Concept-Level Weakness Detection}}
+\author{
+    Hassaan Afzal (i220918) \and Hamid Ali (i221047) \and Muhammad Asjad (i221227) \\
+    \normalsize Generative AI Course Project Proposal
+}
+\date{April 2026}
+
+\begin{document}
+
+\maketitle
+
+\noindent \textbf{Suggested Topic Category:} Text \& LLM Projects
+
+\noindent \textbf{Closest Suggested Topics:} retrieval-augmented chatbot for a specific use case, automatic question generation from textbooks or lecture notes, document summarization, and personalized tutoring support through performance analytics.
+
+\section{Abstract}
+This project proposes a user-centric AI tutoring platform for educational PDFs. The system combines Retrieval-Augmented Generation (RAG), quiz generation, answer evaluation, learning analytics, and concept-level weakness detection to support more effective self-study from course material. Instead of acting only as a document chatbot or a simple PDF-to-quiz generator, the platform is designed around a learner-centered workflow: students upload study documents, ask questions grounded in those documents, take AI-generated quizzes, and generate learner-specific signals from their performance. These signals are used to identify weak concepts and form the basis of a closed tutoring loop in which the system can move toward more targeted explanations, follow-up quizzes, and recommendations. The current implementation already includes document upload and indexing, RAG-based chat, quiz generation and grading, weakness extraction, and a progress dashboard, while the overall research direction is to integrate weakness-aware learner state more deeply into the tutoring pipeline. This makes the project suitable as a Generative AI course project under the Text \& LLM domain while also providing a clear research direction in educational RAG and personalized learning support \cite{nye2023dialog,levonian2023ragmath,han2024tutoringrag,kurulkar2025quizrag,li2025tutorllm,reddig2025feedback,naseer2025adaptive,swacha2025survey}.
+
+\section{Introduction and Motivation}
+Students often prepare for exams from lengthy PDFs, lecture notes, and other unstructured study materials. Traditional revision is slow because students must manually search for important concepts, identify weak areas on their own, and create practice questions separately. Recent progress in large language models (LLMs) and Retrieval-Augmented Generation (RAG) offers a practical way to build systems that answer questions from course material while remaining grounded in retrieved document context rather than relying only on model memory \cite{levonian2023ragmath,han2024tutoringrag,swacha2025survey}.
+
+However, many educational RAG systems remain document-centric: the system answers questions or generates quizzes from uploaded content, but it does not maintain enough learner context to support personalized improvement over time. Similarly, quiz-generation systems may create relevant questions from educational text, yet they often stop at content generation rather than building a feedback loop around student performance \cite{bhowmick2023qg,kurulkar2025quizrag}. This project addresses that gap by combining document-grounded tutoring with weakness-focused learning analytics and by treating detected weaknesses as learner-state signals that should inform future support rather than only being displayed afterward.
+
+\section{Problem Statement}
+Most student-facing AI study tools fall into one of two categories:
+
+\begin{enumerate}
+    \item document-based question answering systems, or
+    \item automated quiz generators.
+\end{enumerate}
+
+Both are useful, but they are limited if they do not analyze how the learner is performing and feed that understanding back into later interactions. A student may receive correct answers and take quizzes, yet still not know which concepts need revision most urgently, and the system may also fail to prioritize the right follow-up support. The core problem addressed in this project is therefore:
+
+\begin{quote}
+\textbf{How can a generative AI system support PDF-based learning while also tracking student performance, detecting concept-level weaknesses, and using that learner state to guide more personalized revision?}
+\end{quote}
+
+\section{Proposed Solution}
+The proposed system is a web-based AI tutoring platform in which each user uploads one or more educational PDFs and interacts with them through a grounded chat and quiz workflow. The broader objective is not only to answer questions from documents, but to build a learner-aware tutoring pipeline in which retrieved document knowledge and learner-performance signals jointly shape the support given to the student.
+
+\subsection{Main Functions}
+\begin{enumerate}
+    \item \textbf{User authentication} for multi-user access and separation of study data.
+    \item \textbf{PDF upload and indexing} so learning material can be stored, chunked, embedded, and retrieved.
+    \item \textbf{RAG-based chat} to answer questions using context retrieved from the uploaded PDF.
+    \item \textbf{AI-generated quizzes} from the selected document and topic.
+    \item \textbf{Quiz grading and concept-level weakness extraction} to identify concepts the learner struggles with.
+    \item \textbf{Learner analytics and progress monitoring} to maintain user-specific performance signals over time.
+    \item \textbf{Weakness-aware tutoring direction} so detected learning gaps can be used to support targeted follow-up guidance rather than serving as dashboard output alone.
+\end{enumerate}
+
+At the implementation level, the current platform uses a FastAPI backend, a React frontend, a vector-store-based retrieval pipeline, embeddings, and an LLM-based generation layer. The backend already contains dedicated routes for authentication, PDFs, chat, quizzes, and analytics, while the frontend already provides dashboard, PDF library, chat, quiz, and analytics pages. In its current form, the system already establishes the core learning loop of content grounding, assessment, and weakness detection; the research goal is to make that loop progressively more learner-aware by using detected weak concepts as meaningful tutoring signals.
+
+\section{Current Implementation Status for Task-1}
+The project is already more than a proposal; a substantial end-to-end prototype exists in the repository.
+
+\subsection{Implemented Backend Capabilities}
+\begin{itemize}
+    \item application entry point and API routing
+    \item PDF upload and management
+    \item RAG pipeline and vector retrieval
+    \item chat answering flow
+    \item quiz generation and submission
+    \item weakness and progress analytics
+    \item SQL models for users, PDFs, quizzes, chats, and weaknesses
+\end{itemize}
+
+\subsection{Implemented Frontend Capabilities}
+\begin{itemize}
+    \item route-level application flow
+    \item API integration
+    \item dashboard
+    \item PDF library
+    \item chat interface
+    \item quiz interface
+    \item analytics dashboard
+\end{itemize}
+
+\subsection{Why this is already 50\%+ complete}
+The core product workflow is already present:
+
+\begin{center}
+\texttt{PDF upload $\rightarrow$ indexing $\rightarrow$ question answering / quiz generation $\rightarrow$ grading $\rightarrow$ weakness detection $\rightarrow$ learner analytics}
+\end{center}
+
+This means Task-1 can be defended as a working prototype with major functionality already implemented. More importantly, it shows that the project is not only about answering questions from PDFs; it is about building the basis of a closed learning loop in which student performance can be interpreted and later used to improve tutoring quality.
+
+\section{Novelty and Differentiation}
+The key differentiator of this project is its weakness-centric and learner-centric positioning. A simpler educational Generative AI system might allow a student to upload a PDF and generate quizzes from it, but that use case remains largely content-centric. In contrast, this project is framed as a personalized tutoring support system: it not only retrieves answers and generates quizzes from study material, but also evaluates learner responses, extracts concept-level weaknesses, and maintains progress signals that are meant to inform later tutoring support. This makes the system closer to an educational feedback loop than a one-shot quiz generator.
+
+For Task-1, the project can already truthfully claim the following:
+
+\begin{itemize}
+    \item document-grounded chat from uploaded PDFs,
+    \item AI-generated quizzes from learning material,
+    \item answer grading and concept-level weakness extraction,
+    \item user-specific learning analytics,
+    \item learner-state signals derived from quiz performance, and
+    \item a foundation for weakness-aware tutoring.
+\end{itemize}
+
+Accordingly, the strongest and most accurate positioning for this phase is:
+
+\begin{quote}
+\textbf{A user-centric RAG-based tutor for educational PDFs with quiz generation, concept-level weakness detection, and learning analytics for targeted support.}
+\end{quote}
+
+\section{Research Direction and Literature Support}
+The proposal is supported by recent literature in four connected areas:
+
+\begin{enumerate}
+    \item \textbf{Educational RAG and grounded tutoring} \cite{nye2023dialog,levonian2023ragmath,han2024tutoringrag,swacha2025survey}
+    \item \textbf{Question and quiz generation from educational content} \cite{bhowmick2023qg,kurulkar2025quizrag}
+    \item \textbf{Personalized feedback in intelligent tutoring systems} \cite{reddig2025feedback,levonian2025safechat}
+    \item \textbf{Adaptive learning analytics and personalized recommendations} \cite{li2025tutorllm,naseer2025adaptive}
+\end{enumerate}
+
+These papers justify the project as academically relevant in Generative AI, especially because they show that educational systems increasingly need grounding, safety, feedback quality, and personalization rather than raw generation alone.
+
+\section{Current Scope and Extension Path}
+To keep the proposal accurate, the following scope distinction should be maintained.
+
+\subsection{Task-1: already implemented or directly demonstrable}
+\begin{itemize}
+    \item user registration and login,
+    \item PDF upload and indexing,
+    \item document-grounded chat,
+    \item quiz generation from uploaded content,
+    \item answer submission and grading,
+    \item concept-level weakness extraction, and
+    \item analytics and progress display.
+\end{itemize}
+
+\subsection{Planned Next Phase}
+\begin{itemize}
+    \item concept mastery profile per learner,
+    \item adaptive quiz generation weighted toward weak concepts,
+    \item personalized recommendations for what to revise next,
+    \item stronger use of learner history to shape future tutoring interactions, and
+    \item comparative evaluation of generic quiz generation versus weakness-aware personalized tutoring.
+\end{itemize}
+
+This distinction allows the project to remain truthful for Task-1 while still presenting a strong and research-worthy completion path for the final stage.
+
+\section{Expected Contribution}
+The expected contribution of the final project is a practical, research-backed educational AI system that connects RAG-based understanding of student documents, generative quiz support, learner performance analysis, concept-level weakness detection, and a pathway toward targeted tutoring support. In short, the final contribution is not merely a chatbot and not merely a quiz generator. It is a learner-centered RAG tutoring platform that uses generative AI to support both understanding and revision while treating learner weaknesses as part of the tutoring pipeline.
+
+\section{Proposed Evaluation Direction}
+To satisfy the course expectation of research contribution or comparative analysis, the final paper can compare:
+
+\begin{enumerate}
+    \item baseline RAG tutoring or generic quiz generation, and
+    \item weakness-aware personalized tutoring.
+\end{enumerate}
+
+Possible evaluation angles include:
+\begin{itemize}
+    \item quality and relevance of generated quiz questions,
+    \item grounding and correctness of chat answers,
+    \item usefulness of detected weak concepts,
+    \item whether weakness detection improves the targeting of later support,
+    \item improvement in follow-up quiz performance, and
+    \item user perception of helpfulness and personalization.
+\end{itemize}
+
+This gives the final paper a clear comparative angle rather than only a system description.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

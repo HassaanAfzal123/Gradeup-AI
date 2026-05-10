@@ -1,0 +1,43 @@
+# GradeUp AI — fresh Docker stack (backend + frontend only).
+# ChromaDB runs embedded in the backend (PersistentClient); no separate Chroma service.
+# Prereq: copy backend/.env.example → backend/.env and set GROQ_API_KEY, SECRET_KEY, etc.
+
+name: gradeup-ai
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gradeup-backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      # Persistent paths inside the container (override host-relative .env values)
+      CHROMA_PERSIST_DIR: /app/chroma_data
+      DATABASE_URL: sqlite:////app/data/gradeup.db
+    volumes:
+      - gradeup_chroma:/app/chroma_data
+      - gradeup_uploads:/app/uploads
+      - gradeup_sqlite:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: /api
+    container_name: gradeup-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  gradeup_chroma:
+  gradeup_uploads:
+  gradeup_sqlite:
