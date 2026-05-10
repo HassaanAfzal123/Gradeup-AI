@@ -1,332 +1,159 @@
-# 🎓 Gradeup AI - RAG-Based Tutoring Platform
+# GradeUp AI
 
-**Generative AI course project** — adaptive tutoring with LLMs and retrieval-augmented generation.
+RAG-based adaptive tutoring: PDF upload, grounded chat, AI quizzes, weakness analytics, and multi-model support (Groq). FastAPI backend, React (Vite) frontend, ChromaDB + sentence-transformers for retrieval.
 
-A production-grade, multi-user AI tutoring platform with PDF-based learning, intelligent quizzes, and personalized weakness tracking.
+**Repository:** [github.com/HassaanAfzal123/Gradeup-AI](https://github.com/HassaanAfzal123/Gradeup-AI)
 
-## ✨ Features
+## Features
 
-- 🔐 **User Authentication** - JWT-based secure login/registration
-- 📚 **PDF Knowledge Base** - Upload and index PDFs with vector embeddings
-- 💬 **AI Chat** - RAG-powered Q&A with source citations
-- 📝 **Smart Quizzes** - AI-generated quizzes from your documents
-- 📊 **Analytics Dashboard** - Track progress and identify weak concepts
-- 🎯 **Multi-User Support** - Complete data isolation per user
-- ☁️ **Cloud Database** - Supabase PostgreSQL for production use
+- JWT auth, multi-user isolation  
+- PDF → chunk → embed → ChromaDB  
+- RAG chat and optional adaptive tutoring context  
+- Quiz generation (multiple Groq models), grading, concept tracking  
+- Analytics / evaluation API; experimental notebook under `experiments/`  
+- Prompts documented in `prompts.txt`  
+- Docker Compose stack (backend + frontend)
 
----
+## Tech stack
 
-## 🏗️ Tech Stack
+| Layer | Choices |
+|--------|---------|
+| API | FastAPI, Uvicorn |
+| DB | SQLite (default) or PostgreSQL via `DATABASE_URL` |
+| Vectors | ChromaDB (persistent client, per-user collections) |
+| LLM | Groq (Llama 3.3 70B, Llama 4 Scout, Llama 3.1 8B, etc.) |
+| Embeddings | `sentence-transformers/all-MiniLM-L6-v2` |
+| Orchestration | LangChain (quiz / agents) |
+| UI | React 18, Vite, Tailwind, Axios |
 
-**Backend:**
-- FastAPI (REST API)
-- PostgreSQL (Supabase)
-- ChromaDB (Vector store)
-- Groq API (LLM - llama-3.3-70b)
-- Sentence Transformers (Embeddings)
-- JWT Authentication
+## Prerequisites
 
-**Frontend:**
-- React + Vite
-- Tailwind CSS
-- React Router
-- Axios
+- Python **3.11+** recommended  
+- Node **18+**  
+- **Groq API key** — [console.groq.com](https://console.groq.com/)  
+- For Docker: **Docker Desktop**
 
----
+## Local development
 
-## 📋 Prerequisites
+### Backend
 
-- Python 3.9+
-- Node.js 18+
-- Groq API Key (free at https://console.groq.com/)
-- Supabase Account (free at https://supabase.com/)
-
----
-
-## 🚀 Quick Start
-
-### 1. Clone the Repository
-
-```bash
-git clone <your-repo-url>
-cd project
-```
-
-### 2. Backend Setup
-
-#### Install Dependencies
-
-```bash
+```powershell
 cd backend
-pip install -r requirements.txt
-```
-
-#### Configure Environment
-
-```bash
-# Copy example env file
 copy .env.example .env
+# Edit .env: GROQ_API_KEY, SECRET_KEY, DATABASE_URL (see .env.example)
+python -m venv .venv311
+.\.venv311\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-Edit `.env` and add your credentials:
+- API: `http://127.0.0.1:8000` — OpenAPI: `/docs`  
+- SQLite example: `DATABASE_URL=sqlite:///./gradeup.db`  
+- First import may download the embedding model (slow on poor networks).
 
-```env
-# Database (Supabase PostgreSQL)
-DATABASE_URL=postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres
+### Frontend
 
-# Groq API
-GROQ_API_KEY=gsk_your_groq_api_key_here
-GROQ_MODEL=llama-3.3-70b-versatile
-
-# JWT Secret (generate a random string)
-SECRET_KEY=your-secret-key-here
-ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-REFRESH_TOKEN_EXPIRE_DAYS=7
-
-# ChromaDB
-CHROMA_PERSIST_DIR=./chroma_db
-
-# Embeddings
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-CHUNK_SIZE=512
-CHUNK_OVERLAP=50
-
-# Frontend URL (for CORS)
-CORS_ORIGINS=http://localhost:5173
-
-# Debug
-DEBUG=true
-```
-
-#### Get Your Credentials
-
-**Groq API Key:**
-1. Go to https://console.groq.com/
-2. Sign up/Login
-3. Create API Key
-4. Copy and paste in `.env`
-
-**Supabase Database URL:**
-1. Go to https://supabase.com/ and create account
-2. Create new project
-3. Go to Settings → Database
-4. Copy "Connection string" (URI format)
-5. Replace `[YOUR-PASSWORD]` with your database password
-6. Paste in `.env`
-
-#### Start Backend
-
-```bash
-python -m uvicorn main:app --reload
-```
-
-Backend will run at: **http://localhost:8000**
-API Docs at: **http://localhost:8000/docs**
-
----
-
-### 3. Frontend Setup
-
-#### Install Dependencies
-
-```bash
+```powershell
 cd frontend
 npm install
-```
-
-#### Start Frontend
-
-```bash
 npm run dev
 ```
 
-Frontend will run at: **http://localhost:5173**
+- App: `http://localhost:5173`  
+- Dev API base: `frontend/.env.development` → `http://localhost:8000/api`  
+- Ensure `CORS_ORIGINS` in `backend/.env` includes `http://localhost:5173` and `http://127.0.0.1:5173` if you switch hosts.
 
----
+### Run tests
 
-## 🎯 Usage
-
-### 1. Register/Login
-- Go to http://localhost:5173
-- Create an account or login
-- You'll be redirected to the dashboard
-
-### 2. Upload PDF
-- Go to "My PDFs" page
-- Upload a PDF document
-- System will automatically extract text, chunk it, and create embeddings
-
-### 3. Chat with PDF
-- Click "Chat" on any uploaded PDF
-- Ask questions about the content
-- Get AI-powered answers with source citations
-
-### 4. Take Quiz
-- Click "Quiz" on any PDF
-- Enter a topic (e.g., "Machine Learning basics")
-- Choose number of questions (1-10)
-- AI generates quiz questions from the PDF
-- Submit answers and get graded instantly
-
-### 5. View Analytics
-- Go to "Analytics" page
-- See your stats: total PDFs, quizzes taken, average score
-- View weak concepts identified from incorrect answers
-- Get personalized study recommendations
-
----
-
-## 📁 Project Structure
-
-```
-project/
-├── backend/
-│   ├── auth/                 # Authentication (JWT, password hashing)
-│   ├── database/             # Database models & connection
-│   ├── routers/              # API endpoints
-│   │   ├── auth.py          # Login, register
-│   │   ├── pdf.py           # PDF upload, list, delete
-│   │   ├── chat.py          # RAG Q&A
-│   │   ├── quiz.py          # Quiz generation & submission
-│   │   └── analytics.py     # Stats & weaknesses
-│   ├── services/             # Core services
-│   │   ├── groq_client.py   # Groq API integration
-│   │   └── rag_service.py   # ChromaDB & RAG logic
-│   ├── uploads/              # Uploaded PDF files
-│   ├── chroma_db/            # ChromaDB vector store
-│   ├── main.py               # FastAPI app entry point
-│   ├── config.py             # Configuration
-│   └── requirements.txt      # Python dependencies
-│
-├── frontend/
-│   ├── src/
-│   │   ├── api/              # API client
-│   │   ├── components/       # React components
-│   │   ├── pages/            # Page components
-│   │   │   ├── Login.jsx
-│   │   │   ├── Register.jsx
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── PDFLibrary.jsx
-│   │   │   ├── ChatPage.jsx
-│   │   │   ├── QuizPage.jsx
-│   │   │   └── AnalyticsPage.jsx
-│   │   ├── utils/            # Utilities (auth)
-│   │   └── App.jsx           # Main app with routing
-│   ├── package.json
-│   └── vite.config.js
-│
-└── README.md                 # This file
+```powershell
+cd backend
+pytest tests -v
 ```
 
----
+## Docker
 
-## 🗄️ Database Schema
+Use **Compose from the repo root** (do not rely on “Run” on a single image in Docker Desktop; service name `backend` must exist on the Compose network).
 
-**Tables:**
-- `users` - User accounts (email, password_hash)
-- `pdfs` - Uploaded PDF metadata
-- `chats` - Q&A conversation history
-- `quizzes` - Generated quizzes and results
-- `weaknesses` - Tracked weak concepts per user
+1. Create `backend/.env` (copy from `.env.example`) with real **`GROQ_API_KEY`** and **`SECRET_KEY`**.  
+2. Compose overrides **`DATABASE_URL`** and **`CHROMA_PERSIST_DIR`** for paths inside containers and uses **named volumes** (separate DB/Chroma/uploads from your local folders).
 
-All tables are created automatically on first run!
+```powershell
+cd <repo-root>
+docker compose build backend
+docker compose up -d
+```
 
----
+Or:
 
-## 🔧 API Endpoints
+```powershell
+.\scripts\docker-start.ps1
+```
 
-**Authentication:**
-- `POST /api/auth/register` - Create account
-- `POST /api/auth/login` - Login (returns JWT)
-- `GET /api/auth/me` - Get current user
+- UI: `http://localhost:5173`  
+- API: `http://localhost:8000`  
+- **First boot** can take **15–30+ minutes** while the embedding model downloads; later starts are faster (Hugging Face cache volume).  
+- **Accounts created locally do not exist in Docker** until you register again (different SQLite file / volume).
 
-**PDFs:**
-- `POST /api/pdf/upload` - Upload PDF
-- `GET /api/pdf/list` - List user's PDFs
-- `POST /api/pdf/summarize/{id}` - Summarize PDF
-- `DELETE /api/pdf/{id}` - Delete PDF
+## Project layout
 
-**Chat:**
-- `POST /api/chat/ask` - Ask question (RAG)
-- `GET /api/chat/history/{pdf_id}` - Get chat history
-- `DELETE /api/chat/{id}` - Delete chat
+```
+├── backend/           # FastAPI app (routers, services, auth, tests)
+├── frontend/          # Vite + React
+├── experiments/       # evaluation_notebook.ipynb, plots
+├── scripts/           # docker-start.ps1, docker-fresh.ps1
+├── prompts.txt       # system / quiz prompts (for rubric / reproducibility)
+├── docker-compose.yml
+└── docs/              # paper assets (e.g. overleaf-final/, .bib, figures) — not extra READMEs
+```
 
-**Quiz:**
-- `POST /api/quiz/generate` - Generate quiz
-- `POST /api/quiz/submit` - Submit & grade quiz
-- `GET /api/quiz/history` - Get quiz history
+## Architecture (high level)
 
-**Analytics:**
-- `GET /api/analytics/weaknesses` - Get weak concepts
-- `GET /api/analytics/progress` - Get overall stats
+```mermaid
+flowchart LR
+  subgraph client [Browser]
+    UI[React]
+  end
+  subgraph api [Backend]
+    F[FastAPI]
+    RAG[RAG + Chroma]
+    LC[LangChain + Groq]
+  end
+  subgraph data [Persistence]
+    SQL[(SQLite / Postgres)]
+    V[(Chroma embeddings)]
+    U[uploads/]
+  end
+  UI -->|REST| F
+  F --> RAG
+  F --> LC
+  F --> SQL
+  RAG --> V
+  RAG --> U
+  LC -->|Groq API| G[Groq]
+```
 
----
+## API overview
 
-## 🐛 Troubleshooting
+- `POST /api/auth/register`, `POST /api/auth/login`, `GET /api/auth/me`  
+- PDF: `POST /api/pdf/upload`, list, delete, summarize  
+- Chat: `POST /api/chat/ask`, history  
+- Quiz: generate, submit, history  
+- Analytics / evaluation endpoints under `/api/analytics`, `/api/evaluation`  
+- Health: `GET /health`
 
-### Backend won't start
-- Check if `.env` file exists and has correct credentials
-- Make sure PostgreSQL/Supabase connection string is correct
-- Verify Groq API key is valid
+Full detail: **`/docs`** when the backend is running.
 
-### Frontend can't connect to backend
-- Ensure backend is running on port 8000
-- Check CORS settings in backend `.env`
-- Verify `API_BASE_URL` in `frontend/src/api/client.js`
+## Troubleshooting
 
-### PDF upload fails
-- Ensure `uploads/` directory exists in backend folder
-- Check file is actually a PDF
-- Verify ChromaDB is working (check `chroma_db/` folder)
+| Issue | What to check |
+|--------|----------------|
+| Backend won’t start | `backend/.env` present; required vars set; `docker compose logs backend` |
+| Login works locally but not in Docker | Expected: Docker uses its own DB volume — register a user in that environment |
+| Frontend 400 on OPTIONS / login | CORS: add your exact `Origin` (localhost vs 127.0.0.1) to `CORS_ORIGINS` |
+| Nginx `upstream backend` | Start stack with **`docker compose up`**, not isolated image Run |
+| Docker build `files.pythonhosted.org` errors | Network/DNS; retry on stable connection; see `backend/Dockerfile` pip retries |
+| Compose “unhealthy” too soon | First model load is long; `docker-compose.yml` uses extended `start_period`; watch `docker compose logs -f backend` |
 
-### Chat returns "couldn't generate answer"
-- Check Groq API key is valid
-- Verify model name is correct (`llama-3.3-70b-versatile`)
-- Check Groq API quota limits
+## License
 
----
-
-## 🚀 Deployment
-
-### Backend (Railway/Render)
-1. Create account on Railway.app or Render.com
-2. Create new PostgreSQL database service
-3. Deploy backend with environment variables from `.env`
-4. Update `CORS_ORIGINS` with your frontend URL
-
-### Frontend (Vercel/Netlify)
-1. Build frontend: `npm run build`
-2. Deploy `dist/` folder to Vercel or Netlify
-3. Update API URL in production environment
-
----
-
-## 📝 License
-
-MIT License - feel free to use this project for learning/commercial purposes!
-
----
-
-## 🤝 Contributing
-
-Contributions welcome! Please open issues or submit PRs.
-
----
-
-## 🙏 Acknowledgments
-
-- **Groq** for fast LLM inference
-- **Supabase** for managed PostgreSQL
-- **ChromaDB** for vector storage
-- **Sentence Transformers** for embeddings
-
----
-
-## 📧 Contact
-
-For questions or support, open an issue on GitHub.
-
----
-
-Made with ❤️ using FastAPI, React, and AI
+MIT — suitable for learning and demos; ensure compliance with Groq, model, and data-use terms in production.
