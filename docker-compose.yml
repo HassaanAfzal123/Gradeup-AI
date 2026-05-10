@@ -23,12 +23,16 @@ services:
       - gradeup_chroma:/app/chroma_data
       - gradeup_uploads:/app/uploads
       - gradeup_sqlite:/app/data
+      # Speeds up restarts: embedding model survives container recreate
+      - gradeup_huggingface:/root/.cache/huggingface
     healthcheck:
+      # First boot downloads all-MiniLM-L6-v2; port 8000 stays closed until import finishes.
+      # 240s is too short — Compose marks unhealthy before uvicorn binds.
       test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
-      interval: 15s
+      interval: 20s
       timeout: 10s
-      retries: 8
-      start_period: 240s
+      retries: 30
+      start_period: 1800s
 
   frontend:
     build:
@@ -48,3 +52,4 @@ volumes:
   gradeup_chroma:
   gradeup_uploads:
   gradeup_sqlite:
+  gradeup_huggingface:

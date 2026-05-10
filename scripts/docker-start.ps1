@@ -17,9 +17,10 @@ Write-Host "Building/updating images (uses cache — much faster than --no-cache
 docker compose build
 
 Write-Host "Starting backend + frontend on the same Docker network..." -ForegroundColor Cyan
+Write-Host "First backend boot can take 15–30+ minutes while the embedding model downloads." -ForegroundColor Yellow
 docker compose up -d
 
 docker compose ps
 Write-Host ""
-Write-Host "Open: http://localhost:5173  (first API start can take several minutes)" -ForegroundColor Green
+Write-Host "Open: http://localhost:5173  (wait until backend is healthy / frontend starts)" -ForegroundColor Green
 Write-Host "If something fails: docker compose logs backend --tail 50" -ForegroundColor Yellow
