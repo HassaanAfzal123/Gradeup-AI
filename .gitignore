@@ -51,5 +51,8 @@ chroma_data/
 # Docker
 *.log
 
+# Regenerated submission bundle (run scripts/build-genai-code-folder.ps1)
+GenAI_Code/
+
 # Old duplicate tree (optional; remove this line if you need it in git)
 ProjectTask-1_i220918_i221047_i221227/

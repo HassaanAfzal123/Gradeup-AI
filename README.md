@@ -33,6 +33,17 @@ RAG-based adaptive tutoring: PDF upload, grounded chat, AI quizzes, weakness ana
 - **Groq API key** — [console.groq.com](https://console.groq.com/)  
 - For Docker: **Docker Desktop**
 
+## Course submission bundle (`GenAI_Code/`)
+
+To produce a **minimal code folder** for your ZIP (no `.venv`, no `node_modules`, no secrets):
+
+```powershell
+.\scripts\build-genai-code-folder.ps1
+```
+
+This creates **`GenAI_Code\`** in the repo root. Add your **PDF report** if required, then zip **per instructor naming** (e.g. `ROLLNO NAME.ZIP`).  
+`GenAI_Code\` is listed in `.gitignore` so it is not committed; the full repo stays the source of truth.
+
 ## Local development
 
 ### Backend
