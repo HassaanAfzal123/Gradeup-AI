@@ -29,6 +29,7 @@ pypdf==3.17.4
 # Configuration
 python-dotenv==1.0.0
 pydantic-settings==2.1.0
+email-validator>=2.0.0
 
 # Testing
 pytest==7.4.4
