@@ -23,6 +23,12 @@ services:
       - gradeup_chroma:/app/chroma_data
       - gradeup_uploads:/app/uploads
       - gradeup_sqlite:/app/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 8
+      start_period: 240s
 
   frontend:
     build:
@@ -35,7 +41,8 @@ services:
     ports:
       - "5173:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
 volumes:
   gradeup_chroma:
